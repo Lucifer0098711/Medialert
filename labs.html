@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediAlert - Test Reports & Diagnostics</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --success: #2ecc71;
+      --light: #ecf0f1;
+      --dark: #1a252f;
+      --warning: #f39c12;
+      --info: #16a085;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #cfe972;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header Styles */
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: var(--shadow);
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .logo i {
+      color: var(--secondary);
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+    
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Main Content */
+    .main-content {
+      padding: 2rem 0;
+    }
+    
+    .page-header {
+      margin-bottom: 2rem;
+    }
+    
+    .page-header h1 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .page-header p {
+      color: #7f8c8d;
+    }
+    
+    .filter-section {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    
+    .filter-group {
+      margin-bottom: 1rem;
+    }
+    
+    .filter-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .filter-group select, .filter-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    
+    .filter-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      justify-content: flex-end;
+    }
+    
+    .btn {
+      padding: 10px 16px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.3s;
+    }
+    
+    .btn-primary {
+      background-color: var(--secondary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #2980b9;
+    }
+    
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--secondary);
+      color: var(--secondary);
+    }
+    
+    .btn-outline:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+    }
+    
+    /* Report Cards */
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .report-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
+    
+    .report-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .report-header {
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .patient-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .patient-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: var(--secondary);
+    }
+    
+    .patient-name {
+      font-weight: bold;
+      color: var(--primary);
+    }
+    
+    .patient-id {
+      font-size: 0.8rem;
+      color: #7f8c8d;
+    }
+    
+    .report-status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .status-critical {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: var(--accent);
+    }
+    
+    .status-normal {
+      background-color: rgba(46, 204, 113, 0.1);
+      color: var(--success);
+    }
+    
+    .status-warning {
+      background-color: rgba(243, 156, 18, 0.1);
+      color: var(--warning);
+    }
+    
+    .report-content {
+      padding: 1.5rem;
+    }
+    
+    .report-title {
+      margin-bottom: 1rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .report-title i {
+      color: var(--secondary);
+    }
+    
+    .report-summary {
+      color: #7f8c8d;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    
+    .report-meta {
+      display: flex;
+      justify-content: space-between;
+      color: #7f8c8d;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .report-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .metric {
+      background-color: var(--light);
+      border-radius: 8px;
+      padding: 0.8rem;
+      min-width: 100px;
+      flex: 1;
+    }
+    
+    .metric-label {
+      font-size: 0.8rem;
+      color: #7f8c8d;
+      margin-bottom: 0.3rem;
+    }
+    
+    .metric-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    
+    .abnormal {
+      color: var(--accent);
+    }
+    
+    .report-actions {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .report-actions a {
+      flex: 1;
+      text-align: center;
+      padding: 0.8rem 0;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background-color 0.3s;
+    }
+    
+    .btn-view {
+      background-color: var(--secondary);
+      color: white;
+    }
+    
+    .btn-view:hover {
+      background-color: #2980b9;
+    }
+    
+    .btn-download {
+      background-color: var(--light);
+      color: var(--primary);
+    }
+    
+    .btn-download:hover {
+      background-color: #dbe1e2;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--primary);
+      color: white;
+      padding: 2rem 0;
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-column h3 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    .footer-column ul {
+      list-style: none;
+    }
+    
+    .footer-column li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-column a {
+      color: #bdc3c7;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-column a:hover {
+      color: white;
+    }
+    
+    .copyright {
+      margin-top: 2rem;
+      text-align: center;
+      color: #bdc3c7;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+    
+    .pagination a {
+      padding: 8px 16px;
+      margin: 0 5px;
+      border-radius: 4px;
+      color: var(--primary);
+      background-color: white;
+      text-decoration: none;
+      transition: background-color 0.3s;
+      box-shadow: var(--shadow);
+    }
+    
+    .pagination a.active {
+      background-color: var(--secondary);
+      color: white;
+    }
+    
+    .pagination a:hover:not(.active) {
+      background-color: #f1f1f1;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .filter-buttons {
+        flex-direction: column;
+      }
+      
+      .filter-buttons button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <i class="fas fa-heartbeat"></i>
+        <span>MediAlert</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#"><i class="fas fa-home"></i> Dashboard</a></li>
+          <li><a href="#"><i class="fas fa-procedures"></i> Patients</a></li>
+          <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
+          <li><a class="logout-button" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <div class="page-header">
+      <h1>Test Reports & Diagnostics</h1>
+      <p>View and analyze patient laboratory and diagnostic test results</p>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label for="patient-filter">Patient Name/ID</label>
+          <input type="text" id="patient-filter" placeholder="Search by name or ID">
+        </div>
+        <div class="filter-group">
+          <label for="test-type">Test Type</label>
+          <select id="test-type">
+            <option value="">All Tests</option>
+            <option value="blood">Blood Work</option>
+            <option value="imaging">Imaging</option>
+            <option value="pathology">Pathology</option>
+            <option value="cardiology">Cardiology</option>
+            <option value="neurology">Neurology</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="date-from">Date From</label>
+          <input type="date" id="date-from">
+        </div>
+        <div class="filter-group">
+          <label for="date-to">Date To</label>
+          <input type="date" id="date-to">
+        </div>
+      </div>
+      <div class="filter-buttons">
+        <button class="btn btn-outline">Reset Filters</button>
+        <button class="btn btn-primary">Apply Filters</button>
+      </div>
+    </div>
+
+    <div class="reports-grid">
+      <!-- Report Card 1 -->
+      <div class="report-card">
+        <div class="report-header">
+          <div class="patient-info">
+            <div class="patient-avatar">JD</div>
+            <div>
+              <div class="patient-name">Jane Doe</div>
+              <div class="patient-id">PT-20250429-001</div>
+            </div>
+          </div>
+          <div class="report-status status-critical">Abnormal</div>
+        </div>
+        <div class="report-content">
+          <h3 class="report-title">
+            <i class="fas fa-vial"></i> Comprehensive Blood Panel
+          </h3>
+          <div class="report-meta">
+            <div>Ordered: May 6, 2025</div>
+            <div>Completed: May 8, 2025</div>
+          </div>
+          <p class="report-summary">
+            The blood panel shows significantly elevated white blood cell count indicating a possible infection. Hemoglobin levels are lower than normal range suggesting moderate anemia. Liver enzymes are slightly elevated which could indicate mild liver inflammation. Immediate follow-up recommended with increased monitoring and potential treatment adjustment.
+          </p>
+          <div class="report-metrics">
+            <div class="metric">
+              <div class="metric-label">WBC</div>
+              <div class="metric-value abnormal">14.7 K/µL</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">HGB</div>
+              <div class="metric-value abnormal">10.2 g/dL</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">ALT</div>
+              <div class="metric-value abnormal">63 U/L</div>
+            </div>
+          </div>
+          <div class="report-actions">
+            <a href="#" class="btn-view">View Full Report</a>
+            <a href="#" class="btn-download">Download PDF</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Report Card 2 -->
+      <div class="report-card">
+        <div class="report-header">
+          <div class="patient-info">
+            <div class="patient-avatar">MS</div>
+            <div>
+              <div class="patient-name">Michael Smith</div>
+              <div class="patient-id">PT-20250423-014</div>
+            </div>
+          </div>
+          <div class="report-status status-normal">Normal</div>
+        </div>
+        <div class="report-content">
+          <h3 class="report-title">
+            <i class="fas fa-x-ray"></i> Chest X-Ray Analysis
+          </h3>
+          <div class="report-meta">
+            <div>Ordered: May 4, 2025</div>
+            <div>Completed: May 4, 2025</div>
+          </div>
+          <p class="report-summary">
+            Chest X-ray shows clear lung fields with no evidence of consolidation, effusion, or pneumothorax. The heart size and mediastinal silhouette appear normal. No significant hilar or mediastinal lymphadenopathy observed. Bony structures are intact with no visible fractures or lesions. The examination indicates healthy lung condition with no acute cardiopulmonary disease.
+          </p>
+          <div class="report-metrics">
+            <div class="metric">
+              <div class="metric-label">Heart Size</div>
+              <div class="metric-value">Normal</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Lungs</div>
+              <div class="metric-value">Clear</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Skeletal</div>
+              <div class="metric-value">Intact</div>
+            </div>
+          </div>
+          <div class="report-actions">
+            <a href="#" class="btn-view">View Full Report</a>
+            <a href="#" class="btn-download">Download PDF</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Report Card 3 -->
+      <div class="report-card">
+        <div class="report-header">
+          <div class="patient-info">
+            <div class="patient-avatar">EJ</div>
+            <div>
+              <div class="patient-name">Emily Johnson</div>
+              <div class="patient-id">PT-20250505-022</div>
+            </div>
+          </div>
+          <div class="report-status status-warning">Borderline</div>
+        </div>
+        <div class="report-content">
+          <h3 class="report-title">
+            <i class="fas fa-heartbeat"></i> Cardiac Stress Test
+          </h3>
+          <div class="report-meta">
+            <div>Ordered: May 7, 2025</div>
+            <div>Completed: May 9, 2025</div>
+          </div>
+          <p class="report-summary">
+            Patient completed Bruce protocol treadmill test reaching 85% of target heart rate. ECG showed minor ST segment depression during peak exercise which normalized during recovery. Blood pressure response was appropriate. No significant arrhythmias were recorded. Test suggests borderline myocardial perfusion that warrants monitoring. Recommend lifestyle modifications and follow-up in 3 months.
+          </p>
+          <div class="report-metrics">
+            <div class="metric">
+              <div class="metric-label">Max HR</div>
+              <div class="metric-value">142 BPM</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">BP Response</div>
+              <div class="metric-value">Normal</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">ST Changes</div>
+              <div class="metric-value abnormal">Mild</div>
+            </div>
+          </div>
+          <div class="report-actions">
+            <a href="#" class="btn-view">View Full Report</a>
+            <a href="#" class="btn-download">Download PDF</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="pagination">
+      <a href="#">&laquo;</a>
+      <a href="#" class="active">1</a>
+      <a href="#">2</a>
+      <a href="#">3</a>
+      <a href="#">4</a>
+      <a href="#">5</a>
+      <a href="#">&raquo;</a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container footer-content">
+      <div class="footer-column">
+        <h3>MediAlert</h3>
+        <p>Advanced healthcare monitoring system for medical professionals.</p>
+      </div>
+      <div class="footer-column">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="#">Patients</a></li>
+          <li><a href="#">Analytics</a></li>
+          <li><a href="#">Alerts</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="#">Medical Library</a></li>
+          <li><a href="#">Technical Support</a></li>
+          <li><a href="#">Training Materials</a></li>
+          <li><a href="#">System Updates</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copyright">
+      <p>© 2025 MediAlert - Healthcare Monitoring System. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>
