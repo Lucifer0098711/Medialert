@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Supplements - MediAlert</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --success: #2ecc71;
+      --light: #ecf0f1;
+      --dark: #1a252f;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header Styles */
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: var(--shadow);
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .logo i {
+      color: var(--secondary);
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+    
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Main Content Styles */
+    .main-content {
+      padding: 2rem 0;
+    }
+    
+    .page-header {
+      margin-bottom: 2rem;
+    }
+    
+    .page-header h1 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .page-header p {
+      color: #7f8c8d;
+    }
+    
+    .content-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .section-header i {
+      font-size: 1.5rem;
+      color: var(--secondary);
+    }
+    
+    .section-header h2 {
+      color: var(--primary);
+    }
+    
+    /* Prescription Card */
+    .prescription-card {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .doctor-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .doctor-name {
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: var(--primary);
+    }
+    
+    .doctor-details p {
+      color: #7f8c8d;
+      margin-bottom: 0.25rem;
+    }
+    
+    .prescription-date {
+      text-align: right;
+      color: #7f8c8d;
+    }
+    
+    .prescription-content {
+      margin-bottom: 1.5rem;
+    }
+    
+    .prescription-content h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .medicine-list {
+      list-style: none;
+    }
+    
+    .medicine-item {
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px dashed #e9ecef;
+    }
+    
+    .medicine-name {
+      font-weight: bold;
+      color: var(--dark);
+      margin-bottom: 0.25rem;
+    }
+    
+    .medicine-instructions {
+      color: #7f8c8d;
+    }
+    
+    .prescription-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: 1rem;
+      border-top: 1px solid #e9ecef;
+    }
+    
+    .doctor-signature {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .signature-img {
+      width: 120px;
+      height: 40px;
+      margin-bottom: 0.5rem;
+      font-family: 'Brush Script MT', cursive;
+      font-size: 1.5rem;
+      color: #4b6584;
+    }
+    
+    .doctor-stamp {
+      color: var(--primary);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+    
+    /* Medication Tracker */
+    .medication-tracker {
+      margin-bottom: 2rem;
+    }
+    
+    .tracker-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    
+    .tracker-table th, .tracker-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .tracker-table th {
+      background-color: var(--light);
+      color: var(--primary);
+      font-weight: bold;
+    }
+    
+    .tracker-table tr:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .custom-checkbox {
+      display: block;
+      position: relative;
+      padding-left: 30px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+    
+    .custom-checkbox input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+    
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 20px;
+      width: 20px;
+      background-color: #fff;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .custom-checkbox:hover input ~ .checkmark {
+      border-color: var(--secondary);
+    }
+    
+    .custom-checkbox input:checked ~ .checkmark {
+      background-color: var(--success);
+      border-color: var(--success);
+    }
+    
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+    
+    .custom-checkbox input:checked ~ .checkmark:after {
+      display: block;
+    }
+    
+    .custom-checkbox .checkmark:after {
+      left: 6px;
+      top: 2px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    
+    .date-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .date-display {
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: var(--primary);
+    }
+    
+    .date-nav-button {
+      background-color: var(--light);
+      border: none;
+      color: var(--primary);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s;
+    }
+    
+    .date-nav-button:hover {
+      background-color: #dce0e3;
+    }
+    
+    .save-button {
+      background-color: var(--success);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      display: block;
+      margin: 1.5rem 0;
+    }
+    
+    .save-button:hover {
+      background-color: #27ae60;
+    }
+    
+    /* Print Prescription Button */
+    .print-prescription {
+      display: flex;
+      justify-content: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e9ecef;
+    }
+    
+    .print-button {
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .print-button:hover {
+      background-color: #2980b9;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--primary);
+      color: white;
+      padding: 2rem 0;
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-column h3 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    .footer-column ul {
+      list-style: none;
+    }
+    
+    .footer-column li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-column a {
+      color: #bdc3c7;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-column a:hover {
+      color: white;
+    }
+    
+    .copyright {
+      margin-top: 2rem;
+      text-align: center;
+      color: #bdc3c7;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .doctor-info {
+        flex-direction: column;
+      }
+      
+      .prescription-date {
+        text-align: left;
+        margin-top: 1rem;
+      }
+      
+      .tracker-table {
+        font-size: 0.9rem;
+      }
+      
+      .tracker-table th, .tracker-table td {
+        padding: 0.75rem 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <i class="fas fa-heartbeat"></i>
+        <span>MediAlert</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="family dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+          <li><a href="live feed.html"><i class="fas fa-chart-line"></i> Health Feed</a></li>
+          <li><a href="nutrients.html"><i class="fas fa-file-medical"></i> Reports</a></li>
+          <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
+          <li><a class="logout-button" href="index .html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  
+  <main class="container main-content">
+    <div class="page-header">
+      <h1><i class="fas fa-pills"></i> Daily Supplements</h1>
+      <p>Track medication schedule and supplement intake for your loved one</p>
+    </div>
+    
+    <div class="content-card">
+      <div class="section-header">
+        <i class="fas fa-file-prescription"></i>
+        <h2>Doctor's Prescription</h2>
+      </div>
+      
+      <div class="prescription-card">
+        <div class="doctor-info">
+          <div class="doctor-details">
+            <div class="doctor-name">Dr. Emily Richardson, MD</div>
+            <p>Specialty: Geriatric Medicine</p>
+            <p>License No.: MED-45678</p>
+            <p>Contact: (555) 123-4567</p>
+          </div>
+          <div class="prescription-date">
+            <p>Prescription Date: May 8, 2025</p>
+            <p>Valid Until: August 8, 2025</p>
+          </div>
+        </div>
+        
+        <div class="prescription-content">
+          <h3>Prescribed Medications:</h3>
+          <ul class="medicine-list">
+            <li class="medicine-item">
+              <div class="medicine-name">Cardiostat (Atenolol) 25mg</div>
+              <div class="medicine-instructions">Take one tablet daily in the morning with food. For blood pressure management.</div>
+            </li>
+            <li class="medicine-item">
+              <div class="medicine-name">Gluconorm (Metformin) 500mg</div>
+              <div class="medicine-instructions">Take one tablet twice daily, morning and evening with meals. For blood sugar regulation.</div>
+            </li>
+            <li class="medicine-item">
+              <div class="medicine-name">Calcium-D3 Supplement 600mg/400IU</div>
+              <div class="medicine-instructions">Take one tablet daily after lunch. For bone health support.</div>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="prescription-footer">
+          <div>
+            <p><b>Additional Notes:</b></p>
+            <p>Monitor blood pressure weekly. Report any dizziness or unusual symptoms immediately.</p>
+          </div>
+          <div class="doctor-signature">
+            <div class="signature-img">Emily Richardson</div>
+            <div class="doctor-stamp">Dr. Emily Richardson, MD<br>Geriatric Medicine</div>
+          </div>
+        </div>
+        
+        <div class="print-prescription">
+          <button class="print-button" id="printPrescription">
+            <i class="fas fa-print"></i> Print Prescription
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="content-card">
+      <div class="section-header">
+        <i class="fas fa-clipboard-check"></i>
+        <h2>Medication Tracker</h2>
+      </div>
+      
+      <div class="medication-tracker">
+        <div class="date-nav">
+          <button class="date-nav-button" id="prevDay">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <div class="date-display" id="currentDate">Sunday, May 11, 2025</div>
+          <button class="date-nav-button" id="nextDay">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        
+        <table class="tracker-table">
+          <thead>
+            <tr>
+              <th>Medication</th>
+              <th>Morning</th>
+              <th>Noon</th>
+              <th>Evening</th>
+              <th>Night</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Cardiostat (Atenolol) 25mg</td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="cardiostat-morning">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="cardiostat-noon">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="cardiostat-evening">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="cardiostat-night">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>Gluconorm (Metformin) 500mg</td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="gluconorm-morning">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="gluconorm-noon">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="gluconorm-evening">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="gluconorm-night">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>Calcium-D3 Supplement 600mg/400IU</td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="calcium-morning">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="calcium-noon">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="calcium-evening">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="calcium-night">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>Cholestaway (Atorvastatin) 10mg</td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="cholestaway-morning">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="cholestaway-noon">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="cholestaway-evening">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="cholestaway-night">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>Vitamin B Complex</td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="vitaminb-morning">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="vitaminb-noon">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="vitaminb-evening">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="vitaminb-night">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>Omega-3 Fish Oil 1000mg</td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="fishoil-morning">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="fishoil-noon">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="fishoil-evening">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="fishoil-night">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>Aspirin 81mg</td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="aspirin-morning">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="aspirin-noon">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="aspirin-evening">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="aspirin-night">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <button class="save-button" id="saveTracking">
+          <i class="fas fa-save"></i> Save Medication Tracking
+        </button>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <div class="container footer-content">
+      <div class="footer-column">
+        <h3>MediAlert</h3>
+        <p>Advanced healthcare monitoring for your peace of mind.</p>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="family dashboard.html">Dashboard</a></li>
+          <li><a href="live feed.html">Health Feed</a></li>
+          <li><a href="nutrients.html">Reports</a></li>
+          <li><a href="#">Alerts</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Support</h3>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="copyright">
+      <p>© 2025 MediAlert - Healthcare Monitoring System. All rights reserved.</p>
+    </div>
+  </footer>
+
+  
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const currentDateEl = document.getElementById('currentDate');
+    const prevDayBtn = document.getElementById('prevDay');
+    const nextDayBtn = document.getElementById('nextDay');
+    const saveBtn = document.getElementById('saveTracking');
+    const printBtn = document.getElementById('printPrescription');
+
+    let currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Ensure no time portion
+
+    function updateDateDisplay() {
+      currentDate.setHours(0, 0, 0, 0); // Normalize again
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      currentDateEl.textContent = currentDate.toLocaleDateString('en-US', options);
+      loadCheckboxes();
+    }
+
+    prevDayBtn.addEventListener('click', function () {
+      currentDate.setDate(currentDate.getDate() - 1);
+      updateDateDisplay();
+    });
+
+    nextDayBtn.addEventListener('click', function () {
+      currentDate.setDate(currentDate.getDate() + 1);
+      updateDateDisplay();
+    });
+
+    saveBtn.addEventListener('click', function () {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      const data = {};
+      checkboxes.forEach(checkbox => {
+        data[checkbox.name] = checkbox.checked;
+      });
+      const dateKey = currentDate.toDateString();
+      localStorage.setItem(`medication-${dateKey}`, JSON.stringify(data));
+      alert('Medication tracking saved successfully!');
+    });
+
+    function loadCheckboxes() {
+      const dateKey = currentDate.toDateString();
+      const data = JSON.parse(localStorage.getItem(`medication-${dateKey}`)) || {};
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = data[checkbox.name] || false;
+      });
+    }
+
+    printBtn.addEventListener('click', function () {
+      const prescriptionContent = document.querySelector('.prescription-card').innerHTML;
+      const printWindow = window.open('', '_blank');
+
+      printWindow.document.write(\`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Prescription - MediAlert</title>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+          <style>
+            body {
+              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+              padding: 20px;
+              max-width: 800px;
+              margin: 0 auto;
+            }
+            .prescription-card {
+              padding: 20px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+            }
+            .doctor-info {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 1.5rem;
+              padding-bottom: 1rem;
+              border-bottom: 1px solid #e9ecef;
+            }
+            .doctor-name {
+              font-weight: bold;
+              font-size: 1.2rem;
+              color: #2c3e50;
+            }
+            .prescription-content {
+              margin-bottom: 1.5rem;
+            }
+            .medicine-list {
+              list-style: none;
+              padding-left: 0;
+            }
+            .medicine-item {
+              margin-bottom: 1rem;
+              padding-bottom: 1rem;
+              border-bottom: 1px dashed #e9ecef;
+            }
+            .prescription-footer {
+              display: flex;
+              justify-content: space-between;
+              padding-top: 1rem;
+              border-top: 1px solid #e9ecef;
+            }
+            .signature-img {
+              font-family: 'Brush Script MT', cursive;
+              font-size: 1.5rem;
+              color: #4b6584;
+              margin-bottom: 0.5rem;
+            }
+            .doctor-stamp {
+              text-align: center;
+            }
+            .print-prescription {
+              display: none;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="prescription-card">
+            \${prescriptionContent}
+          </div>
+          <script>
+            window.onload = function () {
+              window.print();
+            }
+          <\/script>
+        </body>
+        </html>
+      \`);
+
+      printWindow.document.close();
+    });
+
+    updateDateDisplay();
+  });
+</script>
+
+
+          </body>
+          </html>
+        `);
+        
+        printWindow.document.close();
+      });
+      
+      function resetCheckboxes() {
+        // Reset all checkboxes when changing date
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+          if (!checkbox.disabled) {
+            checkbox.checked = false;
+          }
+        });
+      }
+      
+      // Initialize date display
+      updateDateDisplay();
+    });
+  </script>
+</body>
+</html>
