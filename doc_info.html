@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Information - MediAlert</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --success: #2ecc71;
+      --light: #ecf0f1;
+      --dark: #1a252f;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header Styles */
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: var(--shadow);
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .logo i {
+      color: var(--secondary);
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+    
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Doctor Information Styles */
+    .doctor-section {
+      padding: 2rem 0;
+    }
+    
+    .page-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+      gap: 1rem;
+    }
+    
+    .page-header i {
+      font-size: 2rem;
+      color: var(--secondary);
+    }
+    
+    .page-header h1 {
+      color: var(--primary);
+    }
+    
+    .doctor-card {
+      display: flex;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    
+    .doctor-image {
+      min-width: 250px;
+      background-color: var(--light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .doctor-image img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+    
+    .doctor-info {
+      padding: 2rem;
+      flex: 1;
+    }
+    
+    .doctor-name {
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .doctor-specialty {
+      color: var(--secondary);
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .doctor-credentials {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .credential-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .credential-item i {
+      color: var(--secondary);
+    }
+    
+    .doctor-bio {
+      color: #7f8c8d;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Schedule & Booking Section */
+    .schedule-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .schedule-card, .booking-card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 2rem;
+    }
+    
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+    }
+    
+    .section-title i {
+      color: var(--secondary);
+    }
+    
+    .schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .schedule-table th,
+    .schedule-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--light);
+    }
+    
+    .schedule-table th {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .schedule-table td {
+      color: #7f8c8d;
+    }
+    
+    .available {
+      color: var(--success);
+      font-weight: 600;
+    }
+    
+    .unavailable {
+      color: var(--accent);
+    }
+    
+    /* Booking Form */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    
+    .form-group textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    
+    .book-button {
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .book-button:hover {
+      background-color: #2980b9;
+    }
+    
+    /* Reviews Section */
+    .reviews-section {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .review-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .review-card {
+      background-color: var(--light);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+    
+    .reviewer-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    
+    .reviewer-avatar {
+      width: 40px;
+      height: 40px;
+      background-color: var(--secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .reviewer-name {
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .rating {
+      color: #f1c40f;
+      margin-bottom: 0.5rem;
+    }
+    
+    .review-text {
+      color: #7f8c8d;
+      font-style: italic;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--primary);
+      color: white;
+      padding: 2rem 0;
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-column h3 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    .footer-column ul {
+      list-style: none;
+    }
+    
+    .footer-column li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-column a {
+      color: #bdc3c7;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-column a:hover {
+      color: white;
+    }
+    
+    .copyright {
+      margin-top: 2rem;
+      text-align: center;
+      color: #bdc3c7;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+      .schedule-section {
+        grid-template-columns: 1fr;
+      }
+      
+      .doctor-card {
+        flex-direction: column;
+      }
+      
+      .doctor-image {
+        min-width: 100%;
+        height: 250px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <i class="fas fa-heartbeat"></i>
+        <span>MediAlert</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="family dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+          <li><a href="#"><i class="fas fa-chart-line"></i> Health Feed</a></li>
+          <li><a href="#"><i class="fas fa-file-medical"></i> Reports</a></li>
+          <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
+          <li><a class="logout-button" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  
+  <main class="container doctor-section">
+    <div class="page-header">
+      <i class="fas fa-user-md"></i>
+      <h1>Doctor Information</h1>
+    </div>
+    
+    <div class="doctor-card">
+      <div class="doctor-image">
+        <img src="./Doctor Information - MediAlert_files/istockphoto-1861987838-612x612.jpg" alt="Dr. Sarah Johnson">
+      </div>
+      <div class="doctor-info">
+        <h2 class="doctor-name">Dr. Sarah Johnson</h2>
+        <p class="doctor-specialty">Cardiology Specialist</p>
+        
+        <div class="doctor-credentials">
+          <div class="credential-item">
+            <i class="fas fa-user-md"></i>
+            <span><strong>Experience:</strong> 15 years</span>
+          </div>
+          <div class="credential-item">
+            <i class="fas fa-graduation-cap"></i>
+            <span><strong>Education:</strong> Harvard Medical School</span>
+          </div>
+          <div class="credential-item">
+            <i class="fas fa-certificate"></i>
+            <span><strong>Board Certified:</strong> American Board of Cardiology</span>
+          </div>
+          <div class="credential-item">
+            <i class="fas fa-hospital"></i>
+            <span><strong>Hospital:</strong> Metropolitan Medical Center</span>
+          </div>
+        </div>
+        
+        <p class="doctor-bio">
+          Dr. Johnson is a leading specialist in cardiovascular health with over 15 years of experience. She specializes in preventive cardiology, heart rhythm disorders, and cardiac rehabilitation. Dr. Johnson takes a holistic approach to patient care, focusing on lifestyle modifications alongside medical interventions. She has published numerous research papers on heart disease prevention and is actively involved in clinical trials for innovative cardiac treatments.
+        </p>
+      </div>
+    </div>
+    
+    <div class="schedule-section">
+      <div class="schedule-card">
+        <h3 class="section-title">
+          <i class="fas fa-calendar-alt"></i>
+          Weekly Schedule
+        </h3>
+        
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Availability</th>
+              <th>Hours</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Monday</td>
+              <td class="available">Available</td>
+              <td>9:00 AM - 4:00 PM</td>
+            </tr>
+            <tr>
+              <td>Tuesday</td>
+              <td class="available">Available</td>
+              <td>10:00 AM - 6:00 PM</td>
+            </tr>
+            <tr>
+              <td>Wednesday</td>
+              <td class="unavailable">Unavailable</td>
+              <td>Surgery Day</td>
+            </tr>
+            <tr>
+              <td>Thursday</td>
+              <td class="available">Available</td>
+              <td>9:00 AM - 4:00 PM</td>
+            </tr>
+            <tr>
+              <td>Friday</td>
+              <td class="available">Available</td>
+              <td>8:00 AM - 2:00 PM</td>
+            </tr>
+            <tr>
+              <td>Saturday</td>
+              <td class="available">Available</td>
+              <td>10:00 AM - 1:00 PM</td>
+            </tr>
+            <tr>
+              <td>Sunday</td>
+              <td class="unavailable">Unavailable</td>
+              <td>-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="booking-card">
+        <h3 class="section-title">
+          <i class="fas fa-calendar-plus"></i>
+          Book an Appointment
+        </h3>
+        
+        <form id="appointment-form">
+          <div class="form-group">
+            <label for="appointment-date">Preferred Date</label>
+            <input type="date" id="appointment-date" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="appointment-time">Preferred Time</label>
+            <select id="appointment-time" required>
+              <option value="" disabled selected>Select a time slot</option>
+              <option value="09:00">9:00 AM</option>
+              <option value="10:00">10:00 AM</option>
+              <option value="11:00">11:00 AM</option>
+              <option value="12:00">12:00 PM</option>
+              <option value="13:00">1:00 PM</option>
+              <option value="14:00">2:00 PM</option>
+              <option value="15:00">3:00 PM</option>
+              <option value="16:00">4:00 PM</option>
+              <option value="17:00">5:00 PM</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="appointment-reason">Reason for Visit</label>
+            <select id="appointment-reason" required>
+              <option value="" disabled selected>Select reason</option>
+              <option value="consultation">Initial Consultation</option>
+              <option value="checkup">Regular Checkup</option>
+              <option value="followup">Follow-up Appointment</option>
+              <option value="emergency">Urgent Care</option>
+              <option value="test-results">Test Results Review</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="appointment-notes">Additional Notes</label>
+            <textarea id="appointment-notes" placeholder="Any important details the doctor should know..."></textarea>
+          </div>
+          
+          <button type="submit" class="book-button">
+            <i class="fas fa-calendar-check"></i> Book Appointment
+          </button>
+        </form>
+      </div>
+    </div>
+    
+    <div class="reviews-section">
+      <h3 class="section-title">
+        <i class="fas fa-star"></i>
+        Patient Reviews
+      </h3>
+      
+      <div class="review-cards">
+        <div class="review-card">
+          <div class="reviewer-info">
+            <div class="reviewer-avatar">RM</div>
+            <div class="reviewer-name">Robert Miller</div>
+          </div>
+          <div class="rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p class="review-text">
+            "Dr. Johnson literally saved my life. Her quick diagnosis and treatment plan helped me recover from a severe heart condition. She's always patient and explains everything thoroughly."
+          </p>
+        </div>
+        
+        <div class="review-card">
+          <div class="reviewer-info">
+            <div class="reviewer-avatar">JS</div>
+            <div class="reviewer-name">Jennifer Smith</div>
+          </div>
+          <div class="rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
+          </div>
+          <p class="review-text">
+            "Dr. Johnson has been my cardiologist for over 5 years. She's incredibly knowledgeable and caring. Her preventive approach has helped me maintain good heart health."
+          </p>
+        </div>
+        
+        <div class="review-card">
+          <div class="reviewer-info">
+            <div class="reviewer-avatar">TW</div>
+            <div class="reviewer-name">Thomas Wilson</div>
+          </div>
+          <div class="rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p class="review-text">
+            "The most attentive doctor I've ever had. Dr. Johnson takes time to listen and doesn't rush through appointments. Her staff is also equally amazing and professional."
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <div class="container footer-content">
+      <div class="footer-column">
+        <h3>MediAlert</h3>
+        <p>Advanced healthcare monitoring for your peace of mind.</p>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="family dashboard.html">Dashboard</a></li>
+          <li><a href="#">Health Feed</a></li>
+          <li><a href="#">Reports</a></li>
+          <li><a href="#">Alerts</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Support</h3>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="copyright">
+      <p>© 2025 MediAlert - Healthcare Monitoring System. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Simple form validation and submission handling
+    document.getElementById('appointment-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const date = document.getElementById('appointment-date').value;
+      const time = document.getElementById('appointment-time').value;
+      const reason = document.getElementById('appointment-reason').value;
+      
+      if (!date || !time || !reason) {
+        alert('Please fill in all required fields');
+        return;
+      }
+      
+      // Here you would normally send this data to a server
+      alert('Appointment request submitted! We will contact you to confirm your appointment with Dr. Johnson.');
+      
+      // Reset form
+      this.reset();
+    });
+  </script>
+</body>
+</html>
