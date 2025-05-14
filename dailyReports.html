@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Reports - MediAlert</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --success: #2ecc71;
+      --light: #ecf0f1;
+      --dark: #1a252f;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header Styles */
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: var(--shadow);
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .logo i {
+      color: var(--secondary);
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+    
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Dashboard Styles */
+    .dashboard {
+      padding: 2rem 0;
+    }
+    
+    .dashboard-header {
+      margin-bottom: 2rem;
+    }
+    
+    .dashboard-header h1 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .dashboard-header p {
+      color: #7f8c8d;
+    }
+    
+    /* Report Section Styles */
+    .reports-section {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .section-header h2 {
+      color: var(--primary);
+    }
+    
+    .tab-container {
+      margin-bottom: 1.5rem;
+    }
+    
+    .tab-buttons {
+      display: flex;
+      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 1.5rem;
+    }
+    
+    .tab-button {
+      padding: 0.75rem 1.5rem;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #7f8c8d;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .tab-button.active {
+      color: var(--secondary);
+      border-bottom: 3px solid var(--secondary);
+    }
+    
+    .tab-button:hover:not(.active) {
+      color: var(--primary);
+      border-bottom: 3px solid #e0e0e0;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    /* Table Styles */
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+    }
+    
+    .report-table th {
+      background-color: var(--light);
+      color: var(--primary);
+      font-weight: 600;
+      text-align: left;
+      padding: 1rem;
+    }
+    
+    .report-table td {
+      padding: 1rem;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .report-table tr:hover {
+      background-color: #f9f9f9;
+    }
+    
+    .report-table .action-cell {
+      text-align: right;
+    }
+    
+    /* Button Styles */
+    .action-button {
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .action-button:hover {
+      background-color: #2980b9;
+    }
+    
+    .action-button.view {
+      background-color: var(--primary);
+    }
+    
+    .action-button.view:hover {
+      background-color: #1a252f;
+    }
+    
+    .action-button i {
+      margin-right: 5px;
+    }
+    
+    /* Search and Filter Styles */
+    .search-filter {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+    }
+    
+    .search-container {
+      flex: 1;
+      position: relative;
+    }
+    
+    .search-container i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #7f8c8d;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    
+    .filter-container {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .filter-select {
+      padding: 0.75rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      font-size: 1rem;
+      color: var(--primary);
+      background-color: white;
+    }
+    
+    /* Status Indicators */
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .status-normal {
+      background-color: #e8f7f0;
+      color: var(--success);
+    }
+    
+    .status-abnormal {
+      background-color: #ffeaea;
+      color: var(--accent);
+    }
+    
+    .status-pending {
+      background-color: #fff8e6;
+      color: #f39c12;
+    }
+    
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+    
+    .pagination-button {
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .pagination-button.active {
+      background-color: var(--secondary);
+      color: white;
+      border-color: var(--secondary);
+    }
+    
+    .pagination-button:hover:not(.active) {
+      background-color: var(--light);
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--primary);
+      color: white;
+      padding: 2rem 0;
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-column h3 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    .footer-column ul {
+      list-style: none;
+    }
+    
+    .footer-column li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-column a {
+      color: #bdc3c7;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-column a:hover {
+      color: white;
+    }
+    
+    .copyright {
+      margin-top: 2rem;
+      text-align: center;
+      color: #bdc3c7;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* File Export Options */
+    .export-options {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .export-button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      background-color: white;
+      color: var(--primary);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .export-button:hover {
+      background-color: var(--light);
+    }
+    
+    .export-pdf {
+      color: #e74c3c;
+    }
+    
+    .export-excel {
+      color: #27ae60;
+    }
+    
+    .export-print {
+      color: #3498db;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .search-filter {
+        flex-direction: column;
+      }
+      
+      .filter-container {
+        width: 100%;
+      }
+      
+      .tab-buttons {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 5px;
+      }
+      
+      .report-table {
+        overflow-x: auto;
+        display: block;
+      }
+    }
+    
+    /* Additional utility classes */
+    .mt-8 {
+      margin-top: 2rem;
+    }
+    
+    .text-2xl {
+      font-size: 1.5rem;
+    }
+    
+    .font-bold {
+      font-weight: bold;
+    }
+    
+    .mb-4 {
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="reports-dashboard">
+    <header>
+      <div class="container header-content">
+        <div class="logo">
+          <i class="fas fa-heartbeat"></i>  
+          <span>MediAlert</span>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="family dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="live feed.html"><i class="fas fa-chart-line"></i> Health Feed</a></li>
+            <li><a href="#"><i class="fas fa-file-medical"></i> Reports</a></li>
+            <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
+            <li><a class="logout-button" href="index .html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    
+    <main class="container dashboard">
+      <div class="dashboard-header">
+        <h1>Daily Reports</h1>
+        <p>View and download your loved one's medical reports, consultations, and test results</p>
+      </div>
+      
+      <div class="reports-section">
+        <div class="section-header">
+          <h2>Medical History Overview</h2>
+          <div class="export-options">
+            <button class="export-button export-pdf">
+              <i class="fas fa-file-pdf"></i> Export as PDF
+            </button>
+            <button class="export-button export-excel">
+              <i class="fas fa-file-excel"></i> Export as Excel
+            </button>
+            <button class="export-button export-print">
+              <i class="fas fa-print"></i> Print
+            </button>
+          </div>
+        </div>
+        
+        <div class="search-filter">
+          <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" class="search-input" placeholder="Search reports...">
+          </div>
+          <div class="filter-container">
+            <select class="filter-select">
+              <option value="">All Dates</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="year">This Year</option>
+            </select>
+            <select class="filter-select">
+              <option value="">All Types</option>
+              <option value="consultation">Consultations</option>
+              <option value="test">Test Results</option>
+              <option value="prescription">Prescriptions</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="tab-container">
+          <div class="tab-buttons">
+            <button class="tab-button active" data-tab="consultations">
+              <i class="fas fa-user-md"></i> Consultations
+            </button>
+            <button class="tab-button" data-tab="tests">
+              <i class="fas fa-vial"></i> Test Results
+            </button>
+            <button class="tab-button" data-tab="medications">
+              <i class="fas fa-pills"></i> Medications
+            </button>
+            <button class="tab-button" data-tab="summary">
+              <i class="fas fa-chart-pie"></i> Summary Reports
+            </button>
+          </div>
+          
+          <!-- Consultations Tab -->
+          <div class="tab-content active" id="consultations">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Doctor</th>
+                  <th>Department</th>
+                  <th>Diagnosis</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>May 13, 2025 - 10:30 AM</td>
+                  <td>Dr. Sarah Johnson</td>
+                  <td>Cardiology</td>
+                  <td>Routine checkup</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>May 10, 2025 - 2:15 PM</td>
+                  <td>Dr. Michael Chen</td>
+                  <td>Neurology</td>
+                  <td>Cognitive assessment</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>May 5, 2025 - 9:00 AM</td>
+                  <td>Dr. Robert Wilson</td>
+                  <td>General Medicine</td>
+                  <td>Follow-up consultation</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>April 28, 2025 - 11:45 AM</td>
+                  <td>Dr. Emily Davies</td>
+                  <td>Gastroenterology</td>
+                  <td>Digestive symptoms</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>April 20, 2025 - 3:30 PM</td>
+                  <td>Dr. James Wilson</td>
+                  <td>Orthopedics</td>
+                  <td>Joint pain assessment</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <div class="pagination">
+              <div class="pagination-button"><i class="fas fa-chevron-left"></i></div>
+              <div class="pagination-button active">1</div>
+              <div class="pagination-button">2</div>
+              <div class="pagination-button">3</div>
+              <div class="pagination-button"><i class="fas fa-chevron-right"></i></div>
+            </div>
+          </div>
+          
+          <!-- Test Results Tab -->
+          <div class="tab-content" id="tests">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Test Type</th>
+                  <th>Ordered By</th>
+                  <th>Status</th>
+                  <th>Results</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>May 12, 2025</td>
+                  <td>Complete Blood Count (CBC)</td>
+                  <td>Dr. Sarah Johnson</td>
+                  <td><span class="status-badge status-normal">Normal</span></td>
+                  <td>All parameters within range</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>May 12, 2025</td>
+                  <td>Lipid Profile</td>
+                  <td>Dr. Sarah Johnson</td>
+                  <td><span class="status-badge status-abnormal">Abnormal</span></td>
+                  <td>Elevated LDL cholesterol</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>May 9, 2025</td>
+                  <td>Electrocardiogram (ECG)</td>
+                  <td>Dr. Sarah Johnson</td>
+                  <td><span class="status-badge status-normal">Normal</span></td>
+                  <td>Normal sinus rhythm</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>May 8, 2025</td>
+                  <td>Blood Glucose</td>
+                  <td>Dr. Robert Wilson</td>
+                  <td><span class="status-badge status-normal">Normal</span></td>
+                  <td>Within normal range</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>May 5, 2025</td>
+                  <td>MRI Brain Scan</td>
+                  <td>Dr. Michael Chen</td>
+                  <td><span class="status-badge status-pending">Pending</span></td>
+                  <td>Results awaited</td>
+                  <td class="action-cell">
+                    <button class="action-button view" disabled><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button" disabled><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <div class="pagination">
+              <div class="pagination-button"><i class="fas fa-chevron-left"></i></div>
+              <div class="pagination-button active">1</div>
+              <div class="pagination-button">2</div>
+              <div class="pagination-button"><i class="fas fa-chevron-right"></i></div>
+            </div>
+          </div>
+          
+          <!-- Medications Tab -->
+          <div class="tab-content" id="medications">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Medication</th>
+                  <th>Dosage</th>
+                  <th>Frequency</th>
+                  <th>Prescribed By</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Lisinopril</td>
+                  <td>10mg</td>
+                  <td>Once daily</td>
+                  <td>Dr. Sarah Johnson</td>
+                  <td>May 13, 2025</td>
+                  <td>Ongoing</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Atorvastatin</td>
+                  <td>20mg</td>
+                  <td>Once daily at night</td>
+                  <td>Dr. Sarah Johnson</td>
+                  <td>May 13, 2025</td>
+                  <td>Ongoing</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Aspirin</td>
+                  <td>81mg</td>
+                  <td>Once daily</td>
+                  <td>Dr. Sarah Johnson</td>
+                  <td>May 13, 2025</td>
+                  <td>Ongoing</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Multivitamin</td>
+                  <td>1 tablet</td>
+                  <td>Once daily with meal</td>
+                  <td>Dr. Robert Wilson</td>
+                  <td>May 5, 2025</td>
+                  <td>Ongoing</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Vitamin D3</td>
+                  <td>2000 IU</td>
+                  <td>Once daily</td>
+                  <td>Dr. Robert Wilson</td>
+                  <td>May 5, 2025</td>
+                  <td>Ongoing</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <div class="pagination">
+              <div class="pagination-button"><i class="fas fa-chevron-left"></i></div>
+              <div class="pagination-button active">1</div>
+              <div class="pagination-button">2</div>
+              <div class="pagination-button"><i class="fas fa-chevron-right"></i></div>
+            </div>
+          </div>
+          
+          <!-- Summary Reports Tab -->
+          <div class="tab-content" id="summary">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Report Type</th>
+                  <th>Period</th>
+                  <th>Generated Date</th>
+                  <th>Key Findings</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Monthly Health Summary</td>
+                  <td>April 2025</td>
+                  <td>May 1, 2025</td>
+                  <td>Overall stable condition with improved cardiac parameters</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Quarterly Health Report</td>
+                  <td>Q1 2025</td>
+                  <td>April 5, 2025</td>
+                  <td>Gradual improvement in all health parameters</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Medication Efficacy Report</td>
+                  <td>Last 6 months</td>
+                  <td>April 2, 2025</td>
+                  <td>Blood pressure medication showing positive results</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Nutrition & Diet Report</td>
+                  <td>March 2025</td>
+                  <td>April 1, 2025</td>
+                  <td>Improved nutritional intake with balanced diet adherence</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Physical Activity Report</td>
+                  <td>Q1 2025</td>
+                  <td>April 5, 2025</td>
+                  <td>Increased daily activity levels and improved mobility</td>
+                  <td class="action-cell">
+                    <button class="action-button view"><i class="fas fa-eye"></i> View</button>
+                    <button class="action-button"><i class="fas fa-download"></i> Download</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <div class="pagination">
+              <div class="pagination-button"><i class="fas fa-chevron-left"></i></div>
+              <div class="pagination-button active">1</div>
+              <div class="pagination-button">2</div>
+              <div class="pagination-button"><i class="fas fa-chevron-right"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <div class="container footer-content">
+        <div class="footer-column">
+                    <h3>MediAlert</h3>
+          <p>Advanced healthcare monitoring for your peace of mind.</p>
+        </div>
+        
+        <div class="footer-column">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Health Feed</a></li>
+            <li><a href="#">Reports</a></li>
+            <li><a href="#">Alerts</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-column">
+          <h3>Support</h3>
+          <ul>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">FAQs</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="copyright">
+        <p>© 2025 MediAlert - Healthcare Monitoring System. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
+<script>
+  // Tab functionality
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const targetTab = button.getAttribute('data-tab');
+
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+
+      tabContents.forEach(content => {
+        content.classList.remove('active');
+        if (content.id === targetTab) {
+          content.classList.add('active');
+        }
+      });
+    });
+  });
