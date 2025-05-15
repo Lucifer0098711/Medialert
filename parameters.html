@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediAlert - Medical Parameters Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --success: #2ecc71;
+      --warning: #f39c12;
+      --light: #ecf0f1;
+      --dark: #1a252f;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header Styles */
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: var(--shadow);
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .logo i {
+      color: var(--secondary);
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+    
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Breadcrumb */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      margin: 1rem 0;
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+      color: var(--secondary);
+      text-decoration: none;
+    }
+    
+    .breadcrumb span {
+      margin: 0 8px;
+    }
+    
+    /* Main Content Styles */
+    .parameters-dashboard {
+      padding: 1rem 0 2rem;
+    }
+    
+    .parameters-header {
+      margin-bottom: 2rem;
+    }
+    
+    .parameters-header h1 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .parameters-header p {
+      color: #7f8c8d;
+    }
+    
+    /* Cards and Grids */
+    .parameters-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .parameters-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      height: 100%;
+    }
+    
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--light);
+    }
+    
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .card-title i {
+      font-size: 1.2rem;
+      color: var(--secondary);
+    }
+    
+    .card-title h2 {
+      color: var(--primary);
+      font-size: 1.25rem;
+    }
+    
+    .card-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .info-icon {
+      color: var(--secondary);
+      cursor: pointer;
+    }
+    
+    .parameters-card p {
+      color: #7f8c8d;
+      margin-bottom: 1rem;
+    }
+    
+    /* Chart Containers */
+    .chart-container {
+      width: 100%;
+      height: 300px;
+      position: relative;
+    }
+    
+    /* Parameter Table */
+    .parameter-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    
+    .parameter-table th, .parameter-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid var(--light);
+    }
+    
+    .parameter-table th {
+      background-color: #f8f9fa;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .parameter-table tr:hover {
+      background-color: rgba(236, 240, 241, 0.5);
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .status-normal {
+      background-color: var(--success);
+    }
+    
+    .status-warning {
+      background-color: var(--warning);
+    }
+    
+    .status-critical {
+      background-color: var(--accent);
+    }
+    
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 1.25rem;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 0.5rem 0;
+    }
+    
+    .stat-label {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+    
+    /* Threshold Control */
+    .threshold-control {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .parameter-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    
+    .control-group {
+      margin-bottom: 1rem;
+    }
+    
+    .control-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .range-display {
+      display: flex;
+      align-items: center;
+      margin-top: 0.5rem;
+      justify-content: space-between;
+    }
+    
+    .range-min, .range-max {
+      color: #7f8c8d;
+      font-size: 0.85rem;
+    }
+    
+    .range-value {
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      height: 5px;
+      border-radius: 5px;
+      background: var(--light);
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: var(--secondary);
+      cursor: pointer;
+    }
+    
+    /* Buttons */
+    .button {
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .button:hover {
+      background-color: #2980b9;
+    }
+    
+    .button-small {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 1.5rem;
+      justify-content: flex-end;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--primary);
+      color: white;
+      padding: 2rem 0;
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-column h3 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    .footer-column ul {
+      list-style: none;
+    }
+    
+    .footer-column li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-column a {
+      color: #bdc3c7;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-column a:hover {
+      color: white;
+    }
+    
+    .copyright {
+      margin-top: 2rem;
+      text-align: center;
+      color: #bdc3c7;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Responsiveness */
+    @media (max-width: 992px) {
+      .parameters-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <i class="fas fa-heartbeat"></i>
+        <span>MediAlert</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#"><i class="fas fa-home"></i> Dashboard</a></li>
+          <li><a href="#"><i class="fas fa-procedures"></i> Patients</a></li>
+          <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
+          <li><a class="logout-button" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container parameters-dashboard">
+    <div class="breadcrumb">
+      <a href="#">Dashboard</a>
+      <span>/</span>
+      <strong>Medical Parameters</strong>
+    </div>
+    
+    <div class="parameters-header">
+      <h1>Medical Parameters Management</h1>
+      <p>Configure, monitor, and analyze critical physiological parameters for optimized patient care</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <i class="fas fa-heartbeat" style="color: var(--accent); font-size: 1.5rem;"></i>
+        <div class="stat-value">94%</div>
+        <div class="stat-label">Hemodynamic Stability Index</div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-lungs" style="color: var(--secondary); font-size: 1.5rem;"></i>
+        <div class="stat-value">91%</div>
+        <div class="stat-label">Respiratory Function</div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-brain" style="color: var(--warning); font-size: 1.5rem;"></i>
+        <div class="stat-value">87%</div>
+        <div class="stat-label">Neurological Status</div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-kidneys" style="color: var(--success); font-size: 1.5rem;"></i>
+        <div class="stat-value">96%</div>
+        <div class="stat-label">Renal Function</div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-flask" style="color: var(--primary); font-size: 1.5rem;"></i>
+        <div class="stat-value">92%</div>
+        <div class="stat-label">Metabolic Balance</div>
+      </div>
+    </div>
+
+    <div class="parameters-grid">
+      <div class="parameters-card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-heartbeat"></i>
+            <h2>Hemodynamic Parameters</h2>
+          </div>
+          <div class="card-actions">
+            <i class="fas fa-info-circle info-icon"></i>
+          </div>
+        </div>
+        <p>Comprehensive cardiovascular status monitoring with advanced hemodynamic tracking.</p>
+        <div class="chart-container">
+          <canvas id="hemodynamicChart"></canvas>
+        </div>
+      </div>
+      
+      <div class="parameters-card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-lungs"></i>
+            <h2>Respiratory Parameters</h2>
+          </div>
+          <div class="card-actions">
+            <i class="fas fa-info-circle info-icon"></i>
+          </div>
+        </div>
+        <p>Continuous respiratory function assessment and ventilation efficacy metrics.</p>
+        <div class="chart-container">
+          <canvas id="respiratoryChart"></canvas>
+        </div>
+      </div>
+      
+      <div class="parameters-card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-brain"></i>
+            <h2>Neurological Parameters</h2>
+          </div>
+          <div class="card-actions">
+            <i class="fas fa-info-circle info-icon"></i>
+          </div>
+        </div>
+        <p>Advanced neurological monitoring including GCS trends and intracranial dynamics.</p>
+        <div class="chart-container">
+          <canvas id="neuroChart"></canvas>
+        </div>
+      </div>
+      
+      <div class="parameters-card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-tint"></i>
+            <h2>Fluid & Electrolyte Balance</h2>
+          </div>
+          <div class="card-actions">
+            <i class="fas fa-info-circle info-icon"></i>
+          </div>
+        </div>
+        <p>Comprehensive electrolyte, fluid status, and acid-base balance monitoring.</p>
+        <div class="chart-container">
+          <canvas id="electrolytesChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="threshold-control">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-sliders-h"></i>
+          <h2>Critical Parameter Thresholds</h2>
+        </div>
+      </div>
+      <p>Configure automated alert thresholds for critical physiological parameters. Alerts will be triggered when values exceed these ranges.</p>
+      
+      <div class="parameter-controls">
+        <div class="control-group">
+          <label>Mean Arterial Pressure (MAP)</label>
+          <input type="range" min="50" max="110" value="70" id="mapRange">
+          <div class="range-display">
+            <span class="range-min">50 mmHg</span>
+            <span class="range-value">70 mmHg</span>
+            <span class="range-max">110 mmHg</span>
+          </div>
+        </div>
+        
+        <div class="control-group">
+          <label>SpO₂ Lower Threshold</label>
+          <input type="range" min="85" max="100" value="94" id="spo2Range">
+          <div class="range-display">
+            <span class="range-min">85%</span>
+            <span class="range-value">94%</span>
+            <span class="range-max">100%</span>
+          </div>
+        </div>
+        
+        <div class="control-group">
+          <label>Intracranial Pressure (ICP)</label>
+          <input type="range" min="0" max="30" value="15" id="icpRange">
+          <div class="range-display">
+            <span class="range-min">0 mmHg</span>
+            <span class="range-value">15 mmHg</span>
+            <span class="range-max">30 mmHg</span>
+          </div>
+        </div>
+        
+        <div class="control-group">
+          <label>End-Tidal CO₂</label>
+          <input type="range" min="25" max="45" value="35" id="etco2Range">
+          <div class="range-display">
+            <span class="range-min">25 mmHg</span>
+            <span class="range-value">35 mmHg</span>
+            <span class="range-max">45 mmHg</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <button class="button">Save Thresholds</button>
+      </div>
+    </div>
+
+    <div class="parameters-card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-clipboard-list"></i>
+          <h2>Parameter Status Overview</h2>
+        </div>
+        <div class="card-actions">
+          <button class="button button-small">Export Data</button>
+        </div>
+      </div>
+      <p>Comprehensive overview of all critical physiological parameters and their current status.</p>
+      
+      <table class="parameter-table">
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Current Value</th>
+            <th>Reference Range</th>
+            <th>Status</th>
+            <th>24h Trend</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mean Arterial Pressure</td>
+            <td>82 mmHg</td>
+            <td>70-105 mmHg</td>
+            <td><span class="status-indicator status-normal"></span> Normal</td>
+            <td><i class="fas fa-arrow-right" style="color: var(--secondary);"></i></td>
+          </tr>
+          <tr>
+            <td>Cardiac Output</td>
+            <td>5.2 L/min</td>
+            <td>4.0-8.0 L/min</td>
+            <td><span class="status-indicator status-normal"></span> Normal</td>
+            <td><i class="fas fa-arrow-up" style="color: var(--success);"></i></td>
+          </tr>
+          <tr>
+            <td>Central Venous Pressure</td>
+            <td>12 cmH₂O</td>
+            <td>2-8 cmH₂O</td>
+            <td><span class="status-indicator status-warning"></span> Elevated</td>
+            <td><i class="fas fa-arrow-up" style="color: var(--warning);"></i></td>
+          </tr>
+          <tr>
+            <td>PaO₂/FiO₂ Ratio</td>
+            <td>298 mmHg</td>
+            <td>>300 mmHg</td>
+            <td><span class="status-indicator status-warning"></span> Mild Impairment</td>
+            <td><i class="fas fa-arrow-down" style="color: var(--warning);"></i></td>
+          </tr>
+          <tr>
+            <td>Intracranial Pressure</td>
+            <td>8 mmHg</td>
+            <td>5-15 mmHg</td>
+            <td><span class="status-indicator status-normal"></span> Normal</td>
+            <td><i class="fas fa-arrow-right" style="color: var(--secondary);"></i></td>
+          </tr>
+          <tr>
+            <td>Cerebral Perfusion Pressure</td>
+            <td>74 mmHg</td>
+            <td>60-70 mmHg</td>
+            <td><span class="status-indicator status-normal"></span> Normal</td>
+            <td><i class="fas fa-arrow-up" style="color: var(--success);"></i></td>
+          </tr>
+          <tr>
+            <td>Serum Lactate</td>
+            <td>2.8 mmol/L</td>
+            <td>0.5-2.0 mmol/L</td>
+            <td><span class="status-indicator status-warning"></span> Elevated</td>
+            <td><i class="fas fa-arrow-down" style="color: var(--success);"></i></td>
+          </tr>
+          <tr>
+            <td>Arterial pH</td>
+            <td>7.32</td>
+            <td>7.35-7.45</td>
+            <td><span class="status-indicator status-warning"></span> Mild Acidemia</td>
+            <td><i class="fas fa-arrow-right" style="color: var(--secondary);"></i></td>
+          </tr>
+          <tr>
+            <td>GFR (estimated)</td>
+            <td>87 mL/min</td>
+            <td>>90 mL/min</td>
+            <td><span class="status-indicator status-normal"></span> Normal</td>
+            <td><i class="fas fa-arrow-up" style="color: var(--success);"></i></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container footer-content">
+      <div class="footer-column">
+        <h3>MediAlert</h3>
+        <p>Advanced healthcare monitoring system for medical professionals.</p>
+      </div>
+      <div class="footer-column">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="#">Patients</a></li>
+          <li><a href="#">Analytics</a></li>
+          <li><a href="#">Alerts</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="#">Medical Library</a></li>
+          <li><a href="#">Technical Support</a></li>
+          <li><a href="#">Training Materials</a></li>
+          <li><a href="#">System Updates</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copyright">
+      <p>© 2025 MediAlert - Healthcare Monitoring System. All rights reserved.</p>
+    </div>
+  </footer>

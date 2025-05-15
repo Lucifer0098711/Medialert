@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediAlert - Prescription Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --success: #2ecc71;
+      --light: #ecf0f1;
+      --dark: #1a252f;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #cfe972;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header Styles */
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: var(--shadow);
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .logo i {
+      color: var(--secondary);
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+    
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Prescription Page Styles */
+    .prescription-page {
+      padding: 2rem 0;
+    }
+    
+    .page-header {
+      margin-bottom: 2rem;
+    }
+    
+    .page-header h1 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .page-header p {
+      color: #7f8c8d;
+    }
+    
+    .patient-selector {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .patient-selector h2 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .patient-selector select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+    }
+    
+    .medicine-list {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .medicine-list h2 {
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .medicine-list h2 i {
+      color: var(--secondary);
+    }
+    
+    .medicine-item {
+      padding: 1.5rem;
+      border-radius: 8px;
+      background-color: var(--light);
+      margin-bottom: 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .medicine-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .medicine-name {
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    
+    .medicine-info {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+    
+    .medicine-schedule {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .schedule-time {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .schedule-time i {
+      color: var(--secondary);
+    }
+    
+    .medicine-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .action-button {
+      background-color: transparent;
+      border: none;
+      color: var(--secondary);
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: color 0.3s;
+    }
+    
+    .action-button:hover {
+      color: var(--primary);
+    }
+    
+    .add-medicine {
+      margin-top: 1rem;
+      text-align: right;
+    }
+    
+    .add-button {
+      background-color: var(--success);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.3s;
+    }
+    
+    .add-button:hover {
+      background-color: #27ae60;
+    }
+    
+    .prescription-summary {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+    }
+    
+    .summary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .summary-header h2 {
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .summary-header h2 i {
+      color: var(--secondary);
+    }
+    
+    .summary-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    
+    .summary-card {
+      background-color: var(--light);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    
+    .summary-card h3 {
+      font-size: 0.9rem;
+      color: #7f8c8d;
+      margin-bottom: 0.5rem;
+    }
+    
+    .summary-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    
+    .doctor-notes {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .doctor-notes h2 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .doctor-notes h2 i {
+      color: var(--secondary);
+    }
+    
+    .notes-content {
+      background-color: var(--light);
+      border-radius: 8px;
+      padding: 1rem;
+      color: #7f8c8d;
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+    
+    .primary-button {
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .primary-button:hover {
+      background-color: #2980b9;
+    }
+    
+    .secondary-button {
+      background-color: transparent;
+      color: var(--secondary);
+      border: 1px solid var(--secondary);
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .secondary-button:hover {
+      background-color: var(--light);
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--primary);
+      color: white;
+      padding: 2rem 0;
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-column h3 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    .footer-column ul {
+      list-style: none;
+    }
+    
+    .footer-column li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-column a {
+      color: #bdc3c7;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-column a:hover {
+      color: white;
+    }
+    
+    .copyright {
+      margin-top: 2rem;
+      text-align: center;
+      color: #bdc3c7;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .medicine-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .medicine-actions {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <i class="fas fa-heartbeat"></i>
+        <span>MediAlert</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#"><i class="fas fa-home"></i> Dashboard</a></li>
+          <li><a href="#"><i class="fas fa-procedures"></i> Patients</a></li>
+          <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
+          <li><a class="logout-button" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container prescription-page">
+    <div class="page-header">
+      <h1>Prescription Management</h1>
+      <p>Manage and monitor patient medications and treatment plans</p>
+    </div>
+
+    <div class="patient-selector">
+      <h2>Select Patient</h2>
+      <select>
+        <option value="">John Doe - ID: 12345</option>
+        <option value="">Sarah Johnson - ID: 12346</option>
+        <option value="">Michael Smith - ID: 12347</option>
+        <option value="">Emma Williams - ID: 12348</option>
+      </select>
+    </div>
+
+    <div class="medicine-list">
+      <h2><i class="fas fa-prescription-bottle-alt"></i> Current Medications</h2>
+      
+      <div class="medicine-item">
+        <div>
+          <div class="medicine-name">Amoxicillin 500mg</div>
+          <div class="medicine-info">Antibiotic capsule</div>
+        </div>
+        <div class="medicine-schedule">
+          <div class="schedule-time"><i class="fas fa-sun"></i> Morning: 1 capsule after breakfast</div>
+          <div class="schedule-time"><i class="fas fa-moon"></i> Evening: 1 capsule after dinner</div>
+        </div>
+        <div class="medicine-info">
+          Duration: 7 days<br>
+          Started: May 8, 2025
+        </div>
+        <div class="medicine-actions">
+          <button class="action-button" title="Edit"><i class="fas fa-edit"></i></button>
+          <button class="action-button" title="Delete"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+      
+      <div class="medicine-item">
+        <div>
+          <div class="medicine-name">Lisinopril 10mg</div>
+          <div class="medicine-info">Antihypertensive tablet</div>
+        </div>
+        <div class="medicine-schedule">
+          <div class="schedule-time"><i class="fas fa-sun"></i> Morning: 1 tablet before breakfast</div>
+        </div>
+        <div class="medicine-info">
+          Duration: Ongoing<br>
+          Started: April 15, 2025
+        </div>
+        <div class="medicine-actions">
+          <button class="action-button" title="Edit"><i class="fas fa-edit"></i></button>
+          <button class="action-button" title="Delete"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+      
+      <div class="medicine-item">
+        <div>
+          <div class="medicine-name">Metformin 850mg</div>
+          <div class="medicine-info">Antidiabetic tablet</div>
+        </div>
+        <div class="medicine-schedule">
+          <div class="schedule-time"><i class="fas fa-sun"></i> Morning: 1 tablet with breakfast</div>
+          <div class="schedule-time"><i class="fas fa-moon"></i> Evening: 1 tablet with dinner</div>
+        </div>
+        <div class="medicine-info">
+          Duration: Ongoing<br>
+          Started: March 20, 2025
+        </div>
+        <div class="medicine-actions">
+          <button class="action-button" title="Edit"><i class="fas fa-edit"></i></button>
+          <button class="action-button" title="Delete"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+      
+      <div class="medicine-item">
+        <div>
+          <div class="medicine-name">Atorvastatin 20mg</div>
+          <div class="medicine-info">Lipid-lowering tablet</div>
+        </div>
+        <div class="medicine-schedule">
+          <div class="schedule-time"><i class="fas fa-moon"></i> Evening: 1 tablet before bedtime</div>
+        </div>
+        <div class="medicine-info">
+          Duration: Ongoing<br>
+          Started: April 2, 2025
+        </div>
+        <div class="medicine-actions">
+          <button class="action-button" title="Edit"><i class="fas fa-edit"></i></button>
+          <button class="action-button" title="Delete"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+      
+      <div class="medicine-item">
+        <div>
+          <div class="medicine-name">Loratadine 10mg</div>
+          <div class="medicine-info">Antihistamine tablet</div>
+        </div>
+        <div class="medicine-schedule">
+          <div class="schedule-time"><i class="fas fa-sun"></i> Morning: 1 tablet as needed</div>
+        </div>
+        <div class="medicine-info">
+          Duration: As needed<br>
+          Started: May 6, 2025
+        </div>
+        <div class="medicine-actions">
+          <button class="action-button" title="Edit"><i class="fas fa-edit"></i></button>
+          <button class="action-button" title="Delete"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+      
+      <div class="add-medicine">
+        <button class="add-button"><i class="fas fa-plus"></i> Add Medication</button>
+      </div>
+    </div>
+
+    <div class="prescription-summary">
+      <div class="summary-header">
+        <h2><i class="fas fa-clipboard-check"></i> Prescription Summary</h2>
+      </div>
+      <div class="summary-content">
+        <div class="summary-card">
+          <h3>Total Medications</h3>
+          <div class="summary-value">5</div>
+        </div>
+        <div class="summary-card">
+          <h3>Morning Doses</h3>
+          <div class="summary-value">4</div>
+        </div>
+        <div class="summary-card">
+          <h3>Evening Doses</h3>
+          <div class="summary-value">3</div>
+        </div>
+        <div class="summary-card">
+          <h3>Next Review Date</h3>
+          <div class="summary-value">May 25</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doctor-notes">
+      <h2><i class="fas fa-comment-medical"></i> Doctor's Notes</h2>
+      <div class="notes-content">
+        <p>Patient is showing good response to the current medication regimen. Blood pressure has improved but requires continued monitoring. The antibiotic course must be completed in full, even if symptoms improve.</p>
+        <p>Follow-up appointment scheduled for May 25, 2025. Patient to bring all current medications for review.</p>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="secondary-button">Export PDF</button>
+      <button class="primary-button">Save Changes</button>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container footer-content">
+      <div class="footer-column">
+        <h3>MediAlert</h3>
+        <p>Advanced healthcare monitoring system for medical professionals.</p>
+      </div>
+      <div class="footer-column">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="#">Patients</a></li>
+          <li><a href="#">Analytics</a></li>
+          <li><a href="#">Alerts</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="#">Medical Library</a></li>
+          <li><a href="#">Technical Support</a></li>
+          <li><a href="#">Training Materials</a></li>
+          <li><a href="#">System Updates</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copyright">
+      <p>© 2025 MediAlert - Healthcare Monitoring System. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>
