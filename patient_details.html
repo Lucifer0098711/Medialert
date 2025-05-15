@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediAlert - Patient Medical History</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --success: #2ecc71;
+      --light: #ecf0f1;
+      --dark: #1a252f;
+      --warning: #f39c12;
+      --info: #9b59b6;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header Styles */
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: var(--shadow);
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .logo i {
+      color: var(--secondary);
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+    
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Patient Info Section */
+    .patient-profile {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+    
+    .profile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--light);
+    }
+    
+    .patient-name {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .patient-avatar {
+      width: 80px;
+      height: 80px;
+      background-color: var(--light);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--primary);
+      font-size: 2rem;
+    }
+    
+    .patient-info h1 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .patient-id {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+    
+    .patient-status {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .status-tag {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .status-stable {
+      background-color: rgba(46, 204, 113, 0.1);
+      color: var(--success);
+    }
+    
+    .patient-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .detail-group h3 {
+      font-size: 0.9rem;
+      color: #7f8c8d;
+      margin-bottom: 0.5rem;
+    }
+    
+    .detail-value {
+      font-size: 1.1rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    /* Tabs Navigation */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--light);
+      margin-bottom: 2rem;
+    }
+    
+    .tab {
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      color: #7f8c8d;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+    
+    .tab.active {
+      color: var(--secondary);
+      border-bottom: 3px solid var(--secondary);
+    }
+    
+    .tab:hover:not(.active) {
+      color: var(--primary);
+      border-bottom: 3px solid var(--light);
+    }
+    
+    /* Medical History Section */
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .medical-history {
+      margin-bottom: 2rem;
+    }
+    
+    .history-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--light);
+    }
+    
+    .history-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--primary);
+    }
+    
+    .history-title i {
+      color: var(--secondary);
+    }
+    
+    .history-date {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+    
+    .history-content p {
+      color: #34495e;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    
+    .history-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--light);
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+    
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 30px;
+      margin-bottom: 2rem;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background-color: var(--light);
+    }
+    
+    .timeline-item {
+      position: relative;
+      padding-bottom: 2rem;
+    }
+    
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+    
+    .timeline-dot {
+      position: absolute;
+      left: -39px;
+      top: 0;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: var(--secondary);
+      border: 3px solid white;
+    }
+    
+    .timeline-content {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+    }
+    
+    .timeline-date {
+      display: inline-block;
+      background-color: var(--light);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+    
+    /* Medication Table */
+    .medications-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+    }
+    
+    .medications-table th,
+    .medications-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--light);
+    }
+    
+    .medications-table th {
+      background-color: var(--light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .medications-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .medications-table tr:hover td {
+      background-color: #f8f9fa;
+    }
+    
+    .medication-status {
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      display: inline-block;
+    }
+    
+    .status-active {
+      background-color: rgba(46, 204, 113, 0.1);
+      color: var(--success);
+    }
+    
+    .status-discontinued {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: var(--accent);
+    }
+    
+    /* Lab Results */
+    .lab-results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .result-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+    }
+    
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--light);
+    }
+    
+    .result-title {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .result-date {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+    
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .result-item:last-child {
+      border-bottom: none;
+    }
+    
+    .result-label {
+      color: #7f8c8d;
+    }
+    
+    .result-value {
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .result-normal {
+      color: var(--success);
+    }
+    
+    .result-abnormal {
+      color: var(--accent);
+    }
+    
+    /* Button Styles */
+    .button {
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .button:hover {
+      background-color: #2980b9;
+    }
+    
+    .button-outline {
+      background-color: transparent;
+      color: var(--secondary);
+      border: 2px solid var(--secondary);
+    }
+    
+    .button-outline:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--primary);
+      color: white;
+      padding: 2rem 0;
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-column h3 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    .footer-column ul {
+      list-style: none;
+    }
+    
+    .footer-column li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-column a {
+      color: #bdc3c7;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-column a:hover {
+      color: white;
+    }
+    
+    .copyright {
+      margin-top: 2rem;
+      text-align: center;
+      color: #bdc3c7;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .patient-status {
+        margin-top: 1rem;
+      }
+      
+      .tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <i class="fas fa-heartbeat"></i>
+        <span>MediAlert</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="medical%20dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+          <li><a href="#"><i class="fas fa-procedures"></i> Patients</a></li>
+          <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
+          <li><a class="logout-button" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="patient-profile">
+      <div class="profile-header">
+        <div class="patient-name">
+          <div class="patient-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="patient-info">
+            <h1>John Michael Smith</h1>
+            <div class="patient-id">Patient ID: PAT-20250234</div>
+          </div>
+        </div>
+        <div class="patient-status">
+          <span class="status-tag status-stable">Stable Condition</span>
+          <a href="#" class="button button-outline"><i class="fas fa-edit"></i> Edit Profile</a>
+        </div>
+      </div>
+
+      <div class="patient-details">
+        <div class="detail-group">
+          <h3>Date of Birth</h3>
+          <div class="detail-value">March 15, 1975</div>
+        </div>
+        <div class="detail-group">
+          <h3>Age</h3>
+          <div class="detail-value">50 years</div>
+        </div>
+        <div class="detail-group">
+          <h3>Gender</h3>
+          <div class="detail-value">Male</div>
+        </div>
+        <div class="detail-group">
+          <h3>Blood Type</h3>
+          <div class="detail-value">A+</div>
+        </div>
+        <div class="detail-group">
+          <h3>Primary Physician</h3>
+          <div class="detail-value">Dr. Elizabeth Chen</div>
+        </div>
+        <div class="detail-group">
+          <h3>Emergency Contact</h3>
+          <div class="detail-value">Sarah Smith (Wife)<br>+1-555-123-4567</div>
+        </div>
+        <div class="detail-group">
+          <h3>Insurance</h3>
+          <div class="detail-value">MediCare Plus</div>
+        </div>
+        <div class="detail-group">
+          <h3>Last Admission</h3>
+          <div class="detail-value">January 12, 2025</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="medical-history">Medical History</div>
+        <div class="tab" data-tab="medications">Medications</div>
+        <div class="tab" data-tab="lab-results">Lab Results</div>
+        <div class="tab" data-tab="hospitalizations">Hospitalizations</div>
+        <div class="tab" data-tab="allergies">Allergies & Alerts</div>
+        <div class="tab" data-tab="documents">Documents</div>
+      </div>
+
+      <!-- Medical History Tab -->
+      <div class="tab-content active" id="medical-history">
+        <h2>Medical History Timeline</h2>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">January 12, 2025</div>
+              <h3>Hypertension Control Assessment</h3>
+              <p>Patient presented with elevated blood pressure readings at home. Evaluation revealed inadequate medication compliance. Adjusted dosage and scheduled monthly follow-ups.</p>
+              <div class="history-footer">
+                <span>Dr. Elizabeth Chen - Cardiology</span>
+                <a href="#" class="card-link">View Full Report</a>
+              </div>
+            </div>
+          </div>
+          
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">October 5, 2024</div>
+              <h3>Annual Physical Examination</h3>
+              <p>Comprehensive annual check-up. Mild elevation in blood pressure and cholesterol levels noted. Recommended dietary modifications and increased physical activity.</p>
+              <div class="history-footer">
+                <span>Dr. Elizabeth Chen - Primary Care</span>
+                <a href="#" class="card-link">View Full Report</a>
+              </div>
+            </div>
+          </div>
+          
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">May 22, 2024</div>
+              <h3>Knee Arthroscopy</h3>
+              <p>Patient underwent arthroscopic repair of medial meniscus tear in right knee. Procedure was successful with no complications. Prescribed physical therapy for 8 weeks.</p>
+              <div class="history-footer">
+                <span>Dr. Marcus Johnson - Orthopedics</span>
+                <a href="#" class="card-link">View Full Report</a>
+              </div>
+            </div>
+          </div>
+          
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">April 10, 2024</div>
+              <h3>MRI Right Knee</h3>
+              <p>MRI revealed medial meniscus tear in the right knee. Patient referred to orthopedic specialist for surgical consultation.</p>
+              <div class="history-footer">
+                <span>Dr. Elizabeth Chen - Primary Care</span>
+                <a href="#" class="card-link">View Full Report</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <a href="#" class="button">View Complete Medical History</a>
+      </div>
+      
+      <!-- Medications Tab -->
+      <div class="tab-content" id="medications">
+        <h2>Current & Past Medications</h2>
+        <table class="medications-table">
+          <thead>
+            <tr>
+              <th>Medication</th>
+              <th>Dosage</th>
+              <th>Frequency</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Lisinopril</td>
+              <td>20mg</td>
+              <td>Once daily</td>
+              <td>Jan 12, 2025</td>
+              <td>Ongoing</td>
+              <td><span class="medication-status status-active">Active</span></td>
+            </tr>
+            <tr>
+              <td>Atorvastatin</td>
+              <td>10mg</td>
+              <td>Once daily at bedtime</td>
+              <td>Oct 5, 2024</td>
+              <td>Ongoing</td>
+              <td><span class="medication-status status-active">Active</span></td>
+            </tr>
+            <tr>
+              <td>Ibuprofen</td>
+              <td>600mg</td>
+              <td>As needed for pain</td>
+              <td>May 22, 2024</td>
+              <td>July 15, 2024</td>
+              <td><span class="medication-status status-discontinued">Discontinued</span></td>
+            </tr>
+            <tr>
+              <td>Tramadol</td>
+              <td>50mg</td>
+              <td>Every 6 hours as needed</td>
+              <td>May 22, 2024</td>
+              <td>May 29, 2024</td>
+              <td><span class="medication-status status-discontinued">Discontinued</span></td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h2>Medication Allergies</h2>
+        <div class="history-card">
+          <div class="history-content">
+            <p><strong>Penicillin:</strong> Moderate allergic reaction - Hives and difficulty breathing</p>
+            <p><strong>Sulfa Drugs:</strong> Mild allergic reaction - Skin rash</p>
+          </div>
+        </div>
+        
+        <a href="#" class="button">Add New Medication</a>
+      </div>
+
+      <!-- Lab Results Tab -->
+      <div class="tab-content" id="lab-results">
+        <h2>Recent Laboratory Results</h2>
+        
+        <div class="lab-results-grid">
+          <div class="result-card">
+            <div class="result-header">
+              <span class="result-title">Complete Blood Count (CBC)</span>
+              <span class="result-date">Jan 12, 2025</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">WBC</span>
+              <span class="result-value result-normal">7.5 x10^9/L (3.5-10.5)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">RBC</span>
+              <span class="result-value result-normal">5.0 x10^12/L (4.5-5.9)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Hemoglobin</span>
+              <span class="result-value result-normal">15.2 g/dL (13.5-17.5)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Hematocrit</span>
+              <span class="result-value result-normal">45% (41-50)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Platelets</span>
+              <span class="result-value result-normal">250 x10^9/L (150-450)</span>
+            </div>
+          </div>
+          
+          <div class="result-card">
+            <div class="result-header">
+              <span class="result-title">Lipid Panel</span>
+              <span class="result-date">Jan 12, 2025</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Total Cholesterol</span>
+              <span class="result-value result-abnormal">220 mg/dL (&lt;200)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Triglycerides</span>
+              <span class="result-value result-normal">140 mg/dL (&lt;150)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">HDL</span>
+              <span class="result-value result-normal">45 mg/dL (&gt;40)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">LDL</span>
+              <span class="result-value result-abnormal">155 mg/dL (&lt;130)</span>
+            </div>
+          </div>
+          
+          <div class="result-card">
+            <div class="result-header">
+              <span class="result-title">Comprehensive Metabolic Panel</span>
+              <span class="result-date">Jan 12, 2025</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Glucose</span>
+              <span class="result-value result-normal">98 mg/dL (70-99)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">BUN</span>
+              <span class="result-value result-normal">15 mg/dL (7-20)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Creatinine</span>
+              <span class="result-value result-normal">1.0 mg/dL (0.7-1.3)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Sodium</span>
+              <span class="result-value result-normal">140 mEq/L (136-145)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Potassium</span>
+              <span class="result-value result-normal">4.0 mEq/L (3.5-5.0)</span>
+            </div>
+          </div>
+          
+          <div class="result-card">
+            <div class="result-header">
+              <span class="result-title">Liver Function Tests</span>
+              <span class="result-date">Jan 12, 2025</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">ALT</span>
+              <span class="result-value result-normal">30 U/L (7-56)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">AST</span>
+              <span class="result-value result-normal">25 U/L (10-40)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Alkaline Phosphatase</span>
+              <span class="result-value result-normal">70 U/L (44-147)</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Total Bilirubin</span>
+              <span class="result-value result-normal">0.8 mg/dL (0.1-1.2)</span>
+            </div>
+          </div>
+        </div>
+        
+        <a href="#" class="button">View All Lab Results</a>
+      </div>
+
+      <!-- Hospitalizations Tab -->
+      <div class="tab-content" id="hospitalizations">
+        <h2>Hospitalization History</h2>
+        
+        <div class="history-card">
+          <div class="history-header">
+            <div class="history-title">
+              <i class="fas fa-hospital"></i>
+              <h3>Knee Arthroscopy & Recovery</h3>
+            </div>
+            <div class="history-date">May 22 - May 23, 2024</div>
+          </div>
+          <div class="history-content">
+            <p><strong>Admission Reason:</strong> Elective procedure for right knee medial meniscus tear repair</p>
+            <p><strong>Procedures:</strong> Arthroscopic right knee medial meniscectomy</p>
+            <p><strong>Attending Physician:</strong> Dr. Marcus Johnson (Orthopedic Surgery)</p>
+            <p><strong>Discharge Notes:</strong> Patient recovered well post-procedure. Discharged with pain management regimen and physical therapy prescription. Follow-up scheduled for two weeks.</p>
+          </div>
+          <div class="history-footer">
+            <span>Memorial Hospital</span>
+            <a href="#" class="card-link">View Discharge Summary</a>
+          </div>
+        </div>
+        
+        <div class="history-card">
+          <div class="history-header">
+            <div class="history-title">
+              <i class="fas fa-hospital"></i>
+              <h3>Appendectomy</h3>
+            </div>
+            <div class="history-date">September 14 - September 16, 2023</div>
+          </div>
+          <div class="history-content">
+            <p><strong>Admission Reason:</strong> Acute appendicitis</p>
+            <p><strong>Procedures:</strong> Laparoscopic appendectomy</p>
+            <p><strong>Attending Physician:</strong> Dr. Jennifer Adams (General Surgery)</p>
