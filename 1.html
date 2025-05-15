@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediAlert - Test Analytics</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --success: #2ecc71;
+      --light: #ecf0f1;
+      --dark: #1a252f;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header Styles */
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: var(--shadow);
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .logo i {
+      color: var(--secondary);
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+    
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    nav a.active {
+      background-color: var(--secondary);
+    }
+    
+    /* Content Styles */
+    .analytics-container {
+      padding: 2rem 0;
+    }
+    
+    .page-header {
+      margin-bottom: 2rem;
+    }
+    
+    .page-header h1 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .page-header p {
+      color: #7f8c8d;
+    }
+    
+    .analytics-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .card-header h2 {
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .card-header h2 i {
+      color: var(--secondary);
+    }
+    
+    /* Import Section */
+    .import-section {
+      background-color: var(--light);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .import-section h3 {
+      color: var(--primary);
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .import-methods {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    
+    .import-method {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .import-method:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+    
+    .import-method h4 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .import-method p {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+    
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    
+    /* Patient Selector */
+    .patient-selector {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .select-wrapper {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .select-wrapper label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .select-wrapper select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+    }
+    
+    /* Analysis Sections */
+    .analysis-section {
+      margin-bottom: 2rem;
+    }
+    
+    .analysis-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .analysis-header h3 {
+      color: var(--primary);
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .analysis-item {
+      background-color: var(--light);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    
+    .analysis-item h4 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+    
+    .analysis-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .trend {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.9rem;
+    }
+    
+    .trend-up {
+      color: var(--accent);
+    }
+    
+    .trend-down {
+      color: var(--success);
+    }
+    
+    /* Chart Section */
+    .chart-container {
+      height: 400px;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    
+    .chart-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    /* AI Analysis Section */
+    .ai-analysis {
+      background-color: #f8f9fe;
+      border-radius: 8px;
+      padding: 1.5rem;
+      border-left: 4px solid var(--secondary);
+    }
+    
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    
+    .ai-header i {
+      color: var(--secondary);
+      font-size: 1.5rem;
+    }
+    
+    .ai-header h3 {
+      color: var(--primary);
+    }
+    
+    .loading-animation {
+      display: none;
+      text-align: center;
+      padding: 2rem 0;
+    }
+    
+    .loading-spinner {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid var(--secondary);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .ai-output {
+      margin-top: 1rem;
+      display: none;
+    }
+    
+    .ai-summary {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+    }
+    
+    .recommendations {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1rem;
+      border: 1px solid #ddd;
+    }
+    
+    .recommendation-item {
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .recommendation-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    
+    /* Button Styles */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 4px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+    }
+    
+    .btn-primary {
+      background-color: var(--secondary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #2980b9;
+    }
+    
+    .btn-outline {
+      background-color: transparent;
+      color: var(--secondary);
+      border: 1px solid var(--secondary);
+    }
+    
+    .btn-outline:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+    }
+    
+    .btn-ai {
+      background-color: #6c5ce7;
+      color: white;
+    }
+    
+    .btn-ai:hover {
+      background-color: #5b4bc9;
+    }
+    
+    /* Legend Styles */
+    .chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--primary);
+    }
+    
+    .legend-color {
+      width: 20px;
+      height: 10px;
+      border-radius: 3px;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--primary);
+      color: white;
+      padding: 2rem 0;
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-column h3 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    .footer-column ul {
+      list-style: none;
+    }
+    
+    .footer-column li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-column a {
+      color: #bdc3c7;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-column a:hover {
+      color: white;
+    }
+    
+    .copyright {
+      margin-top: 2rem;
+      text-align: center;
+      color: #bdc3c7;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .analysis-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <i class="fas fa-heartbeat"></i>
+        <span>MediAlert</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#"><i class="fas fa-home"></i> Dashboard</a></li>
+          <li><a href="#"><i class="fas fa-procedures"></i> Patients</a></li>
+          <li><a href="#" class="active"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
+          <li><a class="logout-button" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container analytics-container">
+    <div class="page-header">
+      <h1>Test Analytics & Predictions</h1>
+      <p>Advanced analysis and AI-powered predictive insights for patient test results</p>
+    </div>
+
+    <div class="analytics-card">
+      <div class="card-header">
+        <h2><i class="fas fa-file-import"></i> Import Test Results</h2>
+      </div>
+      
+      <div class="import-section">
+        <h3>Select import method:</h3>
+        <div class="import-methods">
+          <div class="import-method">
+            <h4><i class="fas fa-file-csv"></i> CSV Upload</h4>
+            <p>Import test results from a CSV file with patient IDs and test values.</p>
+            <div class="file-input-wrapper">
+              <button class="btn btn-outline"><i class="fas fa-upload"></i> Choose File</button>
+              <input type="file" accept=".csv">
+            </div>
+          </div>
+          
+          <div class="import-method">
+            <h4><i class="fas fa-file-excel"></i> Excel Upload</h4>
+            <p>Import test results from Excel spreadsheets (.xlsx, .xls).</p>
+            <div class="file-input-wrapper">
+              <button class="btn btn-outline"><i class="fas fa-upload"></i> Choose File</button>
+              <input type="file" accept=".xlsx, .xls">
+            </div>
+          </div>
+          
+          <div class="import-method">
+            <h4><i class="fas fa-database"></i> From System</h4>
+            <p>Import directly from the MediAlert database system.</p>
+            <button class="btn btn-outline"><i class="fas fa-sync-alt"></i> Connect to Database</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="patient-selector">
+        <div class="select-wrapper">
+          <label for="patient-select">Select Patient:</label>
+          <select id="patient-select">
+            <option value="">All Patients</option>
+            <option value="1">John Davis (ID: 102938)</option>
+            <option value="2">Maria Rodriguez (ID: 219384)</option>
+            <option value="3">Samuel Wong (ID: 573829)</option>
+            <option value="4">Lisa Johnson (ID: 391847)</option>
+          </select>
+        </div>
+        
+        <div class="select-wrapper">
+          <label for="test-select">Test Type:</label>
+          <select id="test-select">
+            <option value="">All Tests</option>
+            <option value="blood">Blood Tests</option>
+            <option value="glucose">Glucose Monitoring</option>
+            <option value="cholesterol">Cholesterol Panel</option>
+            <option value="thyroid">Thyroid Function</option>
+          </select>
+        </div>
+        
+        <div class="select-wrapper">
+          <label for="date-range">Date Range:</label>
+          <select id="date-range">
+            <option value="7">Last 7 Days</option>
+            <option value="30" selected>Last 30 Days</option>
+            <option value="90">Last 90 Days</option>
+            <option value="180">Last 6 Months</option>
+            <option value="365">Last Year</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="analysis-section">
+        <div class="analysis-header">
+          <h3><i class="fas fa-chart-pie"></i> Key Test Metrics</h3>
+          <button class="btn btn-outline"><i class="fas fa-download"></i> Export Data</button>
+        </div>
+        
+        <div class="analysis-grid">
+          <div class="analysis-item">
+            <h4>Average Glucose Level</h4>
+            <div class="analysis-value">115</div>
+            <div class="trend trend-down">
+              <i class="fas fa-arrow-down"></i>
+              5% from previous period
+            </div>
+          </div>
+          
+          <div class="analysis-item">
+            <h4>Total Cholesterol</h4>
+            <div class="analysis-value">187</div>
+            <div class="trend trend-down">
+              <i class="fas fa-arrow-down"></i>
+              2% from previous period
+            </div>
+          </div>
+          
+          <div class="analysis-item">
+            <h4>HDL Cholesterol</h4>
+            <div class="analysis-value">52</div>
+            <div class="trend trend-up">
+              <i class="fas fa-arrow-up"></i>
+              3% from previous period
+            </div>
+          </div>
+          
+          <div class="analysis-item">
+            <h4>LDL Cholesterol</h4>
+            <div class="analysis-value">124</div>
+            <div class="trend trend-down">
+              <i class="fas fa-arrow-down"></i>
+              4% from previous period
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="chart-container">
+        <div class="chart-actions">
+          <button class="btn btn-outline"><i class="fas fa-chart-line"></i> Line</button>
+          <button class="btn btn-outline"><i class="fas fa-chart-bar"></i> Bar</button>
+          <button class="btn btn-outline"><i class="fas fa-table"></i> Table</button>
+        </div>
+        <canvas id="testResultsChart"></canvas>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-color" style="background-color: rgba(52, 152, 219, 0.8);"></div>
+            <span>Historical Data</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background-color: rgba(231, 76, 60, 0.8);"></div>
+            <span>Normal Range (Upper)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background-color: rgba(46, 204, 113, 0.8);"></div>
+            <span>Normal Range (Lower)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: repeating-linear-gradient(45deg, rgba(155, 89, 182, 0.8), rgba(155, 89, 182, 0.8) 5px, rgba(155, 89, 182, 0.5) 5px, rgba(155, 89, 182, 0.5) 10px);"></div>
+            <span>AI Prediction</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="ai-analysis">
+        <div class="ai-header">
+          <i class="fas fa-brain"></i>
+          <h3>AI-Powered Analysis</h3>
+        </div>
+        <p>Generate intelligent insights and predictions based on test results using our advanced AI system.</p>
+        
+        <div style="margin-top: 1rem;">
+          <button id="runAnalysisBtn" class="btn btn-ai"><i class="fas fa-robot"></i> Run AI Analysis</button>
+        </div>
+        
+        <div class="loading-animation" id="loadingAnimation">
+          <div class="loading-spinner"></div>
+          <p>AI system is analyzing test results and generating insights...</p>
+        </div>
+        
+        <div class="ai-output" id="aiOutput">
+          <div class="ai-summary">
+            <h4>AI Summary:</h4>
+            <p>Based on the glucose monitoring data for the past 30 days, the patient shows a positive trend with decreasing blood glucose levels. The average glucose level of 115 mg/dL is within target range, and the variability has reduced by 12% compared to the previous period.</p>
+            <p>The predictive model suggests that with the current treatment plan, glucose levels will continue to stabilize and may reach the optimal range (80-110 mg/dL) within the next 14-21 days.</p>
+          </div>
+          
+          <div class="recommendations">
+            <h4>AI Recommendations:</h4>
+            <div class="recommendation-item">
+              <strong>Continue current medication regimen</strong> - The current treatment appears effective based on the decreasing trend.
+            </div>
+            <div class="recommendation-item">
+              <strong>Increase monitoring frequency</strong> - Schedule additional morning measurements to better track fasting glucose levels.
+            </div>
+            <div class="recommendation-item">
+              <strong>Schedule follow-up tests</strong> - Recommend HbA1c test in 30 days to evaluate long-term glucose control.
+            </div>
+            <div class="recommendation-item">
+              <strong>Nutritional adjustments</strong> - Consider reducing carbohydrate intake in evening meals based on observed overnight glucose fluctuations.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container footer-content">
+      <div class="footer-column">
+        <h3>MediAlert</h3>
+        <p>Advanced healthcare monitoring system for medical professionals.</p>
+      </div>
+      <div class="footer-column">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="#">Patients</a></li>
+          <li><a href="#">Analytics</a></li>
+          <li><a href="#">Alerts</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="#">Medical Library</a></li>
+          <li><a href="#">Technical Support</a></li>
+          <li><a href="#">Training Materials</a></li>
+          <li><a href="#">System Updates</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copyright">
+      <p>© 2025 MediAlert - Healthcare Monitoring System. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize the chart
+      const ctx = document.getElementById('testResultsChart').getContext('2d');
+      
+      // Sample data - would be replaced with real data in production
+      const labels = ['Jan 15', 'Jan 22', 'Jan 29', 'Feb 5', 'Feb 12', 'Feb 19', 'Feb 26', 'Mar 5', 'Mar 12', 'Mar 19', 'Mar 26', 'Apr 2', 'Apr 9'];
+      const actualData = [132, 128, 125, 131, 122, 119, 115, 118, 112, 119, 115, 110, 115];
+      
+      // Prediction data - starts after the actual data
+      const predictionStartIndex = 7; // Start predictions from March 5th
+      const predictionData = Array(predictionStartIndex).fill(null).concat([118, 114, 110, 107, 105, 103]);
+      
+      // Normal range bounds
+      const upperLimit = Array(labels.length).fill(140);
+      const lowerLimit = Array(labels.length).fill(80);
+      
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Glucose Level',
+              data: actualData,
+              borderColor: 'rgba(52, 152, 219, 0.8)',
+              backgroundColor: 'rgba(52, 152, 219, 0.2)',
+              borderWidth: 2,
+              tension: 0.1,
+              pointRadius: 4,
+              pointBackgroundColor: 'rgba(52, 152, 219, 1)'
+            },
+            {
+              label: 'AI Prediction',
+              data: predictionData,
+              borderColor: 'rgba(155, 89, 182, 0.8)',
+              borderWidth: 2,
+              borderDash: [5, 5],
+              pointRadius: 4,
+              pointBackgroundColor: 'rgba(155, 89, 182, 1)',
+              tension: 0.1,
+              pointStyle: 'triangle'
+            },
+            {
+              label: 'Upper Normal Range',
+              data: upperLimit,
+              borderColor: 'rgba(231, 76, 60, 0.8)',
+              borderWidth: 1,
+              borderDash: [3, 3],
+              pointRadius: 0,
+              fill: false
+            },
+            {
+              label: 'Lower Normal Range',
+              data: lowerLimit,
+              borderColor: 'rgba(46, 204, 113, 0.8)',
+              borderWidth: 1,
+              borderDash: [3, 3],
+              pointRadius: 0,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false
+            }
+          },
+          scales: {
+            y: {
+              title: {
+                display: true,
+                text: 'Glucose Level (mg/dL)'
+              },
+              min: 70,
+              max: 150
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Date'
+              }
+            }
+          }
+        }
+      });
+      
+      // AI Analysis Button Event
+      const runAnalysisBtn = document.getElementById('runAnalysisBtn');
+      const loadingAnimation = document.getElementById('loadingAnimation');
+      const aiOutput = document.getElementById('aiOutput');
+      
+      runAnalysisBtn.addEventListener('click', function() {
+        // Show loading animation
+        loadingAnimation.style.display = 'block';
+        aiOutput.style.display = 'none';
+        
+        // Simulate API call to ChatGPT
+        setTimeout(function() {
+          // Hide loading animation
+          loadingAnimation.style.display = 'none';
+          
+          // Show AI output
+          aiOutput.style.display = 'block';
+        }, 2500);
+      });
+      
+      // Import file button interactivity
+      const fileInputs = document.querySelectorAll('input[type="file"]');
+      fileInputs.forEach(input => {
+        input.addEventListener('change', function() {
+          if (this.files.length > 0) {
+            const parentButton = this.previousElementSibling;
+            const originalText = parentButton.innerHTML;
+            parentButton.innerHTML = `<i class="fas fa-check"></i> ${this.files[0].name}`;
+            
+            // Reset after 3 seconds
+            setTimeout(() => {
+              parentButton.innerHTML = originalText;
+            }, 3000);
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
